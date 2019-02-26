@@ -5,6 +5,8 @@
 #include <IC/AIC>
 #include <time.h>
 #include <fstream>
+#include <opencv2/opencv.hpp>
+#include <opencv2/ml.hpp>
 
 using namespace std;
 using namespace Eigen;

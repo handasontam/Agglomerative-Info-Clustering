@@ -8,12 +8,13 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
+#include <opencv2/ml.hpp>
 
 using namespace std;
 using namespace Eigen;
 using namespace cv;
 
-namespace IC { 
+namespace IC {
 
 	/*
 	Base functor for submodular function. Ground set V is {0 ... n-1} for some non-negative number n.
@@ -44,7 +45,7 @@ namespace IC {
 			csv_path = csv_file_name;
 		}
 
-		Ptr<ml::TrainData> get_dataset(const vector<size_t> &X, const size_t y) const{ 
+		Ptr<ml::TrainData> get_dataset(const vector<size_t> &X, const size_t y) const{
 			// Michael Lim
 
 			// hardcode now
@@ -91,7 +92,7 @@ namespace IC {
 			// Create a DTrees classifier.
 			//
 			cv::Ptr<cv::ml::RTrees> dtree = cv::ml::RTrees::create();
-			
+
 			// set parameters
 			float _priors[] = { 1.0, 10.0 };
 			cv::Mat priors(1, 2, CV_32F, _priors);
@@ -105,7 +106,7 @@ namespace IC {
 			dtree->setTruncatePrunedTree(true);
 			dtree->setPriors( priors );
 			dtree->setPriors(cv::Mat()); // ignore priors for now...
-			
+
 			// Now train the model
 			// NB: we are only using the "train" part of the data set
 			//
@@ -149,7 +150,7 @@ namespace IC {
 					h += mse(temp_dataset);
 				}
 			}
-			
+
 			cout << "for B = {";
 			for (auto i: B)
  				cout << i << ' ';
@@ -173,7 +174,7 @@ namespace IC {
 		HardCodeEntropy(int x){
 
 		}
-	
+
 		double operator() (const vector<size_t> &B) const {
 			size_t n = B.size();
 			vector<size_t> B_ = B;
@@ -336,7 +337,7 @@ namespace IC {
 			first_order_opt = abs(x.dot(q) - x.dot(x));
 			//log<LOG_INFO>(L"[min_norm_base] First order optimality : %1% ") % first_order_opt;
 			// stopping criteria
-			if (first_order_opt < fn_tol) { 
+			if (first_order_opt < fn_tol) {
 				return x; // x separates the base polytope from the origin and is therefore the minimum norm point.
 			}
 			if (old_first_order_opt <= first_order_opt) { // stuck
@@ -371,7 +372,7 @@ namespace IC {
 				L(numCorral, numCorral) = sqrt(1 + q.dot(q) - r.dot(r));
 				Q.col(numCorral++) = q;
 			}
-			int minor_cycle_count = 0; // count number of iterations of minor cycles in iteration of the major cycle 
+			int minor_cycle_count = 0; // count number of iterations of minor cycles in iteration of the major cycle
 			while (1) {
 				minor_cycle_count = minor_cycle_count + 1;
 				auto L_ = L.topLeftCorner(numCorral, numCorral).triangularView<Lower>();
@@ -437,7 +438,7 @@ namespace IC {
 		}
 		return x;
 	}
-		
+
 	/*
 	Compute the minimum norm base in the base polytope of the normalized version of a submodular function with
 	the function tolerance 1E-10, optimality tolerance 1E-10 and precision epsilon 1E-15.
